@@ -7,6 +7,13 @@
   LR
 )
 
+; Liste des regles activables
+(setq LRA nil)
+
+(defun liste-regles-activables ()
+  LRA
+)
+
 ; --------------------------------------------------------
 ; Regle
 
@@ -41,6 +48,11 @@
   (eval (regle-condition (regle-avec-nom nom)))
 )
 
+; Met a jour la liste des regles activables
+(defun maj-regles-activables ()
+  (setq LRA nil)
+  (mapcar (lambda (x) (if (regle-est-activable (regle-nom x)) (setq LRA (cons x LRA)))) LR)
+)
 ; Active une regle de nom donne
 (defun regle-activer (nom)
   (eval (regle-action (regle-avec-nom nom)))
@@ -77,7 +89,7 @@
 )
 
 ; --------------------------------------------------------
-; Tests (à retirer par la suite)
+; Tests (a retirer par la suite)
 
 ; Base de faits
 
@@ -96,24 +108,24 @@
 
 ; Regles de fin
 
-(nouvelle-regle 'est-une-peche '(and '(and a-jus a-noyau) '(string= 'a-chair "orange")) '(nouveau-fruit "peche"))
+(nouvelle-regle 'est-une-peche '(and (and 'a-jus 'a-noyau) (string= 'a-chair "orange")) '(nouveau-fruit "peche"))
 
 ; Enchainement des regles
 
-(if (regle-est-activable 'est-un-fruit)
-    (regle-activer 'est-un-fruit))
-(if (regle-est-activable 'est-a-jus)
-    (regle-activer 'est-a-jus))
-(if (regle-est-activable 'a-un-noyau)
-    (regle-activer 'a-un-noyau))
-(if (regle-est-activable 'a-chair-rouge)
-    (regle-activer 'a-chair-rouge))
-(if (regle-est-activable 'a-chair-orange)
-    (regle-activer 'a-chair-orange))
+;(if (regle-est-activable 'est-un-fruit)
+;    (regle-activer 'est-un-fruit))
+;(if (regle-est-activable 'est-a-jus)
+;    (regle-activer 'est-a-jus))
+;(if (regle-est-activable 'a-un-noyau)
+;    (regle-activer 'a-un-noyau))
+;(if (regle-est-activable 'a-chair-rouge)
+;    (regle-activer 'a-chair-rouge))
+;(if (regle-est-activable 'a-chair-orange)
+;    (regle-activer 'a-chair-orange))
 
 ; Definition du fruit final
-(if (regle-est-activable 'est-une-peche)
-    (regle-activer 'est-une-peche))
+;(if (regle-est-activable 'est-une-peche)
+;    (regle-activer 'est-une-peche))
 
 ; Condition d'arret
-(fruits-definis)
+;(fruits-definis)
