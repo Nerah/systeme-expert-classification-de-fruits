@@ -53,9 +53,15 @@
   (setq LRA nil)
   (mapcar (lambda (x) (if (regle-est-activable (regle-nom x)) (setq LRA (cons x LRA)))) LR)
 )
+
 ; Active une regle de nom donne
 (defun regle-activer (nom)
   (eval (regle-action (regle-avec-nom nom)))
+)
+
+; Active la liste des regles activables
+(defun act-regles-activables ()
+  (mapcar (lambda (x) (regle-activer (regle-nom x)) LRA) LRA)
 )
 
 ; --------------------------------------------------------
@@ -88,8 +94,10 @@
         (t nil))
 )
 
+
+
 ; --------------------------------------------------------
-; Tests (a retirer par la suite)
+; Définitions
 
 ; Base de faits
 
@@ -108,24 +116,20 @@
 
 ; Regles de fin
 
-(nouvelle-regle 'est-une-peche '(and (and 'a-jus 'a-noyau) (string= 'a-chair "orange")) '(nouveau-fruit "peche"))
+(nouvelle-regle 'est-une-peche '(and a-jus a-noyau (string= a-chair "orange") (string= a-peau "lisse")) '(nouveau-fruit "peche"))
 
-; Enchainement des regles
 
-;(if (regle-est-activable 'est-un-fruit)
-;    (regle-activer 'est-un-fruit))
-;(if (regle-est-activable 'est-a-jus)
-;    (regle-activer 'est-a-jus))
-;(if (regle-est-activable 'a-un-noyau)
-;    (regle-activer 'a-un-noyau))
-;(if (regle-est-activable 'a-chair-rouge)
-;    (regle-activer 'a-chair-rouge))
-;(if (regle-est-activable 'a-chair-orange)
-;    (regle-activer 'a-chair-orange))
+; -------------------
+; Programme principal
 
-; Definition du fruit final
-;(if (regle-est-activable 'est-une-peche)
-;    (regle-activer 'est-une-peche))
+; Tant qu'aucun fruit n'a été trouvé, on continue 
+(loop until (fruits-definis)
+      ; Mise à jour de la base de règles activables
+      do (maj-regles-activables)
+      ; Application des règles
+      do (act-regles-activables)
+      ; Test
+      do (print (liste-regles-activables))
+)
 
-; Condition d'arret
-;(fruits-definis)
+; Affichage du résultat
