@@ -1,3 +1,4 @@
+  
 ; --------------------------------------------------------
 ; Liste des regles
 
@@ -48,15 +49,16 @@
   (eval (regle-condition (regle-avec-nom nom)))
 )
 
-; Met a jour la liste des regles activables
+; Met a jour la liste des regles activables et retire de la liste des regles (pour eviter de repasser dans la meme regle plusieurs fois)
 (defun maj-regles-activables ()
   (setq LRA nil)
   (mapcar (lambda (x) (if (regle-est-activable (regle-nom x)) (setq LRA (cons x LRA)))) LR)
 )
 
-; Active une regle de nom donne
+; Active une regle de nom donne et la rend inactivable Ã  nouveau
 (defun regle-activer (nom)
   (eval (regle-action (regle-avec-nom nom)))
+  (setf (regle-condition (regle-avec-nom nom)) nil)
 )
 
 ; Active la liste des regles activables
@@ -112,65 +114,72 @@
   )
 )
 
-(defun demande-utilisateur(var lst)
+(defun demande-utilisateur(lst)
   (print "choisissez votre regle : ")
   (terpri)
   (choix lst)
   (setq indice (read))
   (setq res (nth (- indice 1) lst))
-  (setq var res)
+  res
 )
 
 ; --------------------------------------------------------
-; Définitions
+; Definitions
 
 ; Base de faits
 
-; Niveau 1
-(setq a-jus nil)
-
-; Niveau 2
-(setq a-noyau nil)
-
-; Niveau 3
-(setq a-chair nil)
-
-; Niveau 4
-(setq a-peau nil)
+(setq jus nil)
+(setq noyau nil)
+(setq chair nil)
+(setq peau nil)
+(setq gout nil)
+(setq coquille nil)
 
 ;---------
 ; Regles
 
-; Règle initiale - la seule activable à l'origine (c'est forcément un fruit)
-(nouvelle-regle 'est-un-fruit t '(setq a-jus t))
+; Regle initiale - la seule activable a l'origine (c'est forcement un fruit)
+(nouvelle-regle 'est-un-fruit t '(setq jus t))
 
 ; --------
-; Règles intermédiaires - niveau 1 (avec ou sans jus)
-(nouvelle-regle 'est-a-jus 'a-jus '(setq a-noyau t))
-
-
-; --------
-; Règles intermédiaires - niveau 2
-(nouvelle-regle 'a-un-noyau 'a-noyau '(demande-utilisateur a-chair ("orange" "rouge")))
+; Regles intermediaires - niveau 1 (avec ou sans jus)
+(nouvelle-regle 'jus 'jus '(setq noyau t))
 
 ; --------
-; Règles intermédiaires - niveau 3
-(nouvelle-regle 'a-chair-orange '(string= a-chair "orange") '(setq a-peau "lisse"))
+; Regles intermediaires - niveau 2
+(nouvelle-regle 'a-un-noyau 'noyau '(setq chair (demande-utilisateur '("chair orange" "chair jaune-marron-kaki" "chair rouge" "pas de chair"))))
 
 ; --------
-; Regles de fin - quand le fruit a été trouvé
-(nouvelle-regle 'est-une-peche '(and a-jus a-noyau (string= a-chair "orange") (string= a-peau "lisse")) '(nouveau-fruit "peche"))
+; Regles intermediaires - niveau 3
+(nouvelle-regle 'chair-orange '(string= chair "chair orange") '(setq peau (demande-utilisateur '("peau lisse" "peau duveteuse"))))
+(nouvelle-regle 'chair-jaune-marron-kaki '(string= chair "chair jaune-marron-kaki") '(setq gout (demande-utilisateur '("gout sucre" "gout sale"))))
+(nouvelle-regle 'pas-de-chair '(string= chair "pas de chair") '(setq coquille t))
+
+; --------
+; Regles de sortie - quand le fruit est trouve
+(nouvelle-regle 'est-un-abricot '(and jus noyau (string= chair "chair orange") (string= peau "peau lisse")) '(nouveau-fruit "abricot"))
+(nouvelle-regle 'est-une-peche '(and jus noyau (string= chair "chair orange") (string= peau "peau duveteuse")) '(nouveau-fruit "peche"))
+(nouvelle-regle 'est-une-prune '(and jus noyau (string= chair "chair jaune-marron-kaki") (string= gout "gout sucre")) '(nouveau-fruit "prune"))
+(nouvelle-regle 'est-une-olive '(and jus noyau (string= chair "chair jaune-marron-kaki") (string= gout "gout sale")) '(nouveau-fruit "olive"))
+(nouvelle-regle 'est-une-cerise '(and jus noyau (string= chair "chair rouge")) '(nouveau-fruit "cerise"))
+(nouvelle-regle 'est-une-noix '(and jus noyau (string= chair "pas de chair") coquille) '(nouveau-fruit "noix"))
 
 
 ; -------------------
 ; Programme principal
 
-; Tant qu'aucun fruit n'a été trouvé, on continue 
+; Message
+(print "Ce programme determine le fruit que vous avez sous la main.")
+(print "Il vous proposera plusieurs choix. A vous de selectionner le choix qui correspond le plus a votre fruit.")
+(terpri)
+
+; Tant qu'aucun fruit n'a ete trouve, on continue 
 (loop until (fruits-definis)
-      ; Mise à jour de la base de règles activables
+      ; Mise Ã  jour de la base de rÃ¨gles activables
       do (maj-regles-activables)
-      ; Application des règles
+      ; Application des rÃ¨gles
       do (act-regles-activables)
 )
 
-; Affichage du résultat
+; Affichage du resultat
+(print (liste-fruits))
