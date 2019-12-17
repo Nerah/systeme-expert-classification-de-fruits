@@ -94,28 +94,71 @@
         (t nil))
 )
 
+; --------------------------------------------------------
+; Interactions utilisateur
 
+(defun choix(lst)
+  (setq longueur (length lst))
+  (cond
+    ((not lst) nil)
+    ((listp (car lst)) (choix (car lst)))
+  )
+
+  (loop for x from 1 to longueur
+        for y in lst 
+      do(format t " ~A - " x)
+      do(format t "~A" y)
+      (terpri)
+  )
+)
+
+(defun demande-utilisateur(var lst)
+  (print "choisissez votre regle : ")
+  (terpri)
+  (choix lst)
+  (setq indice (read))
+  (setq res (nth (- indice 1) lst))
+  (setq var res)
+)
 
 ; --------------------------------------------------------
 ; Définitions
 
 ; Base de faits
 
+; Niveau 1
 (setq a-jus nil)
+
+; Niveau 2
 (setq a-noyau nil)
+
+; Niveau 3
 (setq a-chair nil)
+
+; Niveau 4
 (setq a-peau nil)
 
+;---------
 ; Regles
 
+; Règle initiale - la seule activable à l'origine (c'est forcément un fruit)
 (nouvelle-regle 'est-un-fruit t '(setq a-jus t))
+
+; --------
+; Règles intermédiaires - niveau 1 (avec ou sans jus)
 (nouvelle-regle 'est-a-jus 'a-jus '(setq a-noyau t))
-(nouvelle-regle 'a-un-noyau 'a-noyau '(setq a-chair "orange"))
+
+
+; --------
+; Règles intermédiaires - niveau 2
+(nouvelle-regle 'a-un-noyau 'a-noyau '(demande-utilisateur a-chair ("orange" "rouge")))
+
+; --------
+; Règles intermédiaires - niveau 3
 (nouvelle-regle 'a-chair-orange '(string= a-chair "orange") '(setq a-peau "lisse"))
-(nouvelle-regle 'a-chair-rouge '(string= a-chair "rouge") '(setq a-peau "rugueuse"))
 
-; Regles de fin
-
+; --------
+; Regles de fin - quand le fruit a été trouvé
 (nouvelle-regle 'est-une-peche '(and a-jus a-noyau (string= a-chair "orange") (string= a-peau "lisse")) '(nouveau-fruit "peche"))
 
 
@@ -128,8 +171,6 @@
       do (maj-regles-activables)
       ; Application des règles
       do (act-regles-activables)
-      ; Test
-      do (print (liste-regles-activables))
 )
 
 ; Affichage du résultat
