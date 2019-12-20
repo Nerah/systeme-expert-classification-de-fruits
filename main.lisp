@@ -5,17 +5,8 @@
 ; User interactions functions
 (load "src/interface/interaction.lisp")
 
-; --------------------------------------------------------
-; Definitions
-
 ; Base de faits
-
-(setq jus nil)
-(setq noyau nil)
-(setq chair nil)
-(setq peau nil)
-(setq gout nil)
-(setq coquille nil)
+(load "src/bases/base_faits.lisp")
 
 ;---------
 ; Regles
