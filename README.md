@@ -13,6 +13,15 @@ Dans un terminal, entrez la commande suivante:
 clisp main.lisp
 ```
 
+## Classification des fruits
+
+Notre classification se base sur la classification instaurée par Jean Duperrex.
+Vous pouvez la retrouver [en cliquant sur ce lien](http://www.jeanduperrex.ch/Site/Classification_fruits_files/Classification%20FRUITS%20Duperrex.pdf).
+
+La classification de Jean Duperrex n'étant pas suffisante pour permettre à un système expert de retrouver un fruit spécifique d'une sous-catégorique, notre travail était de rajouter des règles afin de distinguer chaque fruit.
+
+Le fichier Fruits.cmap vous permet de visualiser notre nouvelle classification.
+
 ## Architecture
 
 ### [main.lisp](main.lisp)
