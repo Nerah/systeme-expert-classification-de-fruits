@@ -39,11 +39,6 @@
   (loop for r in LR thereis (string= (regle-nom r) nom))
 )
 
-; Verifie si un ensemble de regles est verifie
-(defun liste-regles-existe (liste_noms)
-  (loop for nom in liste_noms always (regle-existe nom))
-)
-
 ; Verifie si une regle de nom donne est activable
 (defun regle-est-activable (nom)
   (eval (regle-condition (regle-avec-nom nom)))
